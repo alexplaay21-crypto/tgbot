@@ -157,6 +157,130 @@ class BackendClient:
         resp.raise_for_status()
         return resp.json()
 
+    async def upload_official_module(
+        self,
+        module_id: str,
+        name: str,
+        description: str,
+        category: str,
+        access_type: str,
+        core_version_requirement: str,
+        version: str,
+        icon_file_id: str,
+        creator_telegram_id: int,
+        filename: str,
+        data: bytes,
+    ) -> dict:
+        resp = await self._client.post(
+            "/modules/official/upload",
+            data={
+                "module_id": module_id,
+                "name": name,
+                "description": description,
+                "category": category,
+                "access_type": access_type,
+                "core_version_requirement": core_version_requirement,
+                "version": version,
+                "icon_file_id": icon_file_id,
+                "creator_telegram_id": str(creator_telegram_id),
+            },
+            files={"file": (filename, data, "application/zip")},
+        )
+        resp.raise_for_status()
+        return resp.json()
+
+    async def verify_module(self, module_id: str, creator_telegram_id: int) -> dict:
+        resp = await self._client.post(
+            f"/modules/{module_id}/verify",
+            params={"creator_telegram_id": creator_telegram_id},
+        )
+        resp.raise_for_status()
+        return resp.json()
+
+    async def create_promo_code(
+        self,
+        code: str,
+        type_: str,
+        plan_code: str | None,
+        bonus_days: int | None,
+        discount_percent: int | None,
+        usage_limit: int | None,
+        expires_in_days: int | None,
+        creator_telegram_id: int,
+    ) -> dict:
+        resp = await self._client.post(
+            "/promocodes",
+            json={
+                "code": code,
+                "type": type_,
+                "plan_code": plan_code,
+                "bonus_days": bonus_days,
+                "discount_percent": discount_percent,
+                "usage_limit": usage_limit,
+                "expires_in_days": expires_in_days,
+                "creator_telegram_id": creator_telegram_id,
+            },
+        )
+        resp.raise_for_status()
+        return resp.json()
+
+    async def list_admin_users(
+        self,
+        creator_telegram_id: int,
+        limit: int = 20,
+    ) -> list[dict]:
+        resp = await self._client.get(
+            "/admin/users",
+            params={
+                "creator_telegram_id": creator_telegram_id,
+                "limit": limit,
+            },
+        )
+        resp.raise_for_status()
+        return resp.json()
+
+    async def get_admin_stats(self, creator_telegram_id: int) -> dict:
+        resp = await self._client.get(
+            "/admin/stats",
+            params={"creator_telegram_id": creator_telegram_id},
+        )
+        resp.raise_for_status()
+        return resp.json()
+
+    async def flag_user(
+        self,
+        creator_telegram_id: int,
+        target_telegram_user_id: int,
+        reason: str,
+    ) -> dict:
+        resp = await self._client.post(
+            "/moderation/flag",
+            json={
+                "creator_telegram_id": creator_telegram_id,
+                "target_telegram_user_id": target_telegram_user_id,
+                "reason": reason,
+            },
+        )
+        resp.raise_for_status()
+        return resp.json()
+
+    async def list_moderation_flags(
+        self,
+        creator_telegram_id: int,
+        telegram_user_id: int | None = None,
+    ) -> list[dict]:
+        params = {"creator_telegram_id": creator_telegram_id}
+
+        if telegram_user_id is not None:
+            params["telegram_user_id"] = telegram_user_id
+
+        resp = await self._client.get(
+            "/moderation/flags",
+            params=params,
+        )
+        resp.raise_for_status()
+        return resp.json()
+
     async def list_plans(self) -> list[dict]:
         resp = await self._client.get("/plans")
         resp.raise_for_status()

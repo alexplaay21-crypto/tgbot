@@ -8,7 +8,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import ErrorEvent
 
 from api.backend_client import backend_client
-from bot.handlers import account, connect, custom_modules, menu, my_modules, payments, start, store
+from bot.handlers import account, connect, creator, custom_modules, menu, my_modules, payments, start, store
 from bot.middlewares.user_context import UserContextMiddleware
 from config.settings import settings
 
@@ -30,6 +30,7 @@ async def main() -> None:
     dp.include_router(my_modules.router)
     dp.include_router(custom_modules.router)
     dp.include_router(connect.router)
+    dp.include_router(creator.router)
     dp.include_router(menu.router)
 
     @dp.error()

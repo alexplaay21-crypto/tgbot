@@ -20,7 +20,8 @@
     "my_account": "👤 My Account",
     "referrals": "👥 Referrals",
     "settings": "⚙️ Settings",
-    "help": "🆘 Help"
+    "help": "🆘 Help",
+    "promo": "🎟 Promo Code"
   },
   "account": {
     "title": "👤 My Account",
@@ -141,5 +142,14 @@
     "coming_soon": "🚧 This section is coming soon.",
     "generic_error": "❌ Something went wrong. Please try again later.",
     "need_start": "Please send /start to begin."
+  },
+  "promo": {
+    "promo_enter": "Enter promo code:",
+    "promo_success_plan": "Promo code activated!\n\nPlan: {plan}\nBonus: {days} days.",
+    "promo_success_days": "Promo code activated!\n\nYou received: {days} days.",
+    "promo_success_discount": "Promo code activated!\n\nDiscount: {discount}% on your next purchase.",
+    "promo_success": "Promo code activated successfully!",
+    "promo_failed": "Failed to activate promo code: {reason}",
+    "promo_cancelled": "Promo code activation cancelled."
   }
 }

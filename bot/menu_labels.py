@@ -5,6 +5,7 @@ _MENU_KEYS = [
     "menu.store",
     "menu.my_modules",
     "menu.my_account",
+    "menu.promo",
     "menu.referrals",
     "menu.settings",
     "menu.help",

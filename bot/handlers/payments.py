@@ -53,13 +53,36 @@ async def pay_for_plan(callback: CallbackQuery, backend_user: dict | None) -> No
         return
 
     plan_name = _PLAN_NAMES.get(code, {}).get(lang, code)
+
+    original_price = price_entry["stars_amount"]
+
+    try:
+        discount_percent = await backend_client.get_pending_discount(
+            callback.from_user.id
+        )
+    except Exception:
+        discount_percent = None
+
+    final_price = original_price
+
+    if discount_percent:
+        final_price = max(
+            1,
+            int(original_price * (100 - discount_percent) / 100),
+        )
+
     await callback.message.answer_invoice(
         title=plan_name,
         description=t("plans.invoice_description", lang, plan=plan_name),
         payload=f"sub:{code}:{duration}",
         currency="XTR",
-        prices=[LabeledPrice(label=plan_name, amount=price_entry["stars_amount"])],
-        provider_token="",  # Telegram Stars need no payment provider
+        prices=[
+            LabeledPrice(
+                label=plan_name,
+                amount=final_price,
+            )
+        ],
+        provider_token="",
     )
 
 

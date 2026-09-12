@@ -224,6 +224,25 @@ class BackendClient:
         resp.raise_for_status()
         return resp.json()
 
+    async def redeem_promo_code(self, telegram_user_id: int, code: str) -> dict:
+        resp = await self._client.post(
+            "/promocodes/redeem",
+            json={
+                "telegram_user_id": telegram_user_id,
+                "code": code,
+            },
+        )
+        resp.raise_for_status()
+        return resp.json()
+
+    async def get_pending_discount(self, telegram_user_id: int) -> int | None:
+        resp = await self._client.get(
+            "/promocodes/pending-discount",
+            params={"telegram_user_id": telegram_user_id},
+        )
+        resp.raise_for_status()
+        return resp.json().get("discount_percent")
+
     async def list_admin_users(
         self,
         creator_telegram_id: int,

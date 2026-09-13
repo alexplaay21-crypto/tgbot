@@ -100,13 +100,38 @@ async def vip_info(callback: CallbackQuery, backend_user: dict | None) -> None:
 async def pay_for_vip(callback: CallbackQuery, backend_user: dict | None) -> None:
     lang = _lang(backend_user)
     await callback.answer()
+
     title = t("plans.custom_vip_title", lang)
+    original_price = CUSTOM_VIP_STARS
+
+    # Promo discount applies to Custom VIP too.
+    # Backend is the source of truth for the currently pending discount.
+    try:
+        discount_percent = await backend_client.get_pending_discount(
+            callback.from_user.id
+        )
+    except Exception:
+        discount_percent = None
+
+    final_price = original_price
+
+    if discount_percent:
+        final_price = max(
+            1,
+            int(original_price * (100 - discount_percent) / 100),
+        )
+
     await callback.message.answer_invoice(
         title=title,
-        description=t("plans.custom_vip_description", lang, stars=CUSTOM_VIP_STARS),
+        description=t("plans.custom_vip_description", lang, stars=final_price),
         payload="custom_vip",
         currency="XTR",
-        prices=[LabeledPrice(label=title, amount=CUSTOM_VIP_STARS)],
+        prices=[
+            LabeledPrice(
+                label=title,
+                amount=final_price,
+            )
+        ],
         provider_token="",
     )
 
